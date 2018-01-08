@@ -1,4 +1,4 @@
-# /usr/bin/python
+﻿# /usr/bin/python
 
 import sys, pygame
 import numpy as np
@@ -34,7 +34,6 @@ while 1:
 
     # Souris détectée dans le rectangle du chapeau
     if hatrect.collidepoint(pygame.mouse.get_pos()):
-        print('Dans le chapeau')
         inHat = 1 # dans le chapeau
         # tirage de l'image aléatoire
         if randomActif > 0:
