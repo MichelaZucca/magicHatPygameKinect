@@ -4,7 +4,7 @@ from pygame.color import THECOLORS
 from pykinect import nui
 from pykinect.nui import JointId
 
-VIDEO_WINSIZE = (640, 480)
+VIDEO_WINSIZE = (600, 480)
 KINECTEVENT = pygame.USEREVENT
 
 screen = None
@@ -108,7 +108,12 @@ def main():
     background = pygame.transform.scale(background, (640, 480))
     backgroundrect = background.get_rect()
 
-    
+    # Chapeau du magicien
+    hat = pygame.image.load('project/images/magicHat.png')
+    hat = pygame.transform.scale(hat, (100, 100))
+    hatrect = hat.get_rect()
+    hatrect.center = (300, 360)
+
     angle = 0
     with nui.Runtime() as kinect:
         kinect.skeleton_engine.enabled = True
@@ -123,8 +128,12 @@ def main():
         
         # Main game loop
         done = False
+        screen.blit(background, backgroundrect)
+        screen.blit(hat, hatrect)
+        pygame.display.update()
         while not done:
             event = pygame.event.wait()
+
 
             if event.type == pygame.QUIT:
                 done = True
@@ -133,6 +142,17 @@ def main():
                 skeletons = event.skeletons
                 screen.blit(background, backgroundrect)
                 draw_skeletons(skeletons)
+                for skeleton in skeletons:
+                    if skeleton.eTrackingState == nui.SkeletonTrackingState.TRACKED:
+                        leftHand = skeleton.SkeletonPositions[JointId.HandLeft];
+                        testwer = skeleton_to_depth_image(leftHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
+                        xcord = testwer[0]
+                        ycord = testwer[1]
+                        hatrect.center = (xcord, ycord)
+                        print(testwer)
+
+                # hatrect.center(LEFT_ARM)
+                screen.blit(hat, hatrect)
                 pygame.display.update()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -146,3 +166,6 @@ def main():
                     kinect.camera.elevation_angle = 0
     
     pygame.quit()
+
+if __name__ == '__main__':
+    main()
