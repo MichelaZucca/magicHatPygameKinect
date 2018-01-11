@@ -145,11 +145,15 @@ def main():
                 for skeleton in skeletons:
                     if skeleton.eTrackingState == nui.SkeletonTrackingState.TRACKED:
                         leftHand = skeleton.SkeletonPositions[JointId.HandLeft];
-                        testwer = skeleton_to_depth_image(leftHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
-                        xcord = testwer[0]
-                        ycord = testwer[1]
-                        hatrect.center = (xcord, ycord)
-                        print(testwer)
+                        rightHand = skeleton.SkeletonPositions[JointId.HandRight];
+
+                        leftHandCoords = skeleton_to_depth_image(leftHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
+                        rightHandCoords = skeleton_to_depth_image(rightHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
+
+                        hatrect.center = (leftHandCoords[0], leftHandCoords[1])
+                        if(hatrect.collidepoint(rightHandCoords)):
+                            print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
+
 
                 # hatrect.center(LEFT_ARM)
                 screen.blit(hat, hatrect)
