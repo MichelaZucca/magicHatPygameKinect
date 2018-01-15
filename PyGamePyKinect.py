@@ -121,11 +121,18 @@ def main():
     hatrect.center = (300, 360)
     abovehatrect = pygame.Rect(hatrect.x, hatrect.y - 100, 100, 100)
 
+    stars = pygame.image.load('project/images/stars.gif')
+    stars = pygame.transform.scale(stars, (100, 100))
+    starsrect = stars.get_rect();
+    srcImage = ' '
+
     # Controle
-    inHat = True
+    wasInHat = False
+    isAboveHat = False
     counter = 0  # temps d'affichage de l'objet magique sortie du chapeau
-    timeMax = 200  # temps maximum d'affichage
+    timeMax = 60  # temps maximum d'affichage
     randomImage = 1
+    delta = 0.5
     randomActif = False
     no = 1
 
@@ -167,39 +174,41 @@ def main():
                         hatrect.center = (leftHandCoords[0], leftHandCoords[1])
                         abovehatrect.center = (hatrect.x, hatrect.y - 100)
                         if (hatrect.collidepoint(rightHandCoords)):
-                            inHat = 1  # dans le chapeau
+                            wasInHat = True  # dans le chapeau
                             randomActif = True
-
-                        if (inHat and abovehatrect.collidepoint(rightHandCoords[0], rightHandCoords[1])):
-                            print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
+                        if(wasInHat and (leftHandCoords[0] - hatrect.center[0] > delta) and hatrect.center[0] - leftHandCoords[0] > delta):
+                            wasInHat = False
+                        if (wasInHat and (not isAboveHat ) and abovehatrect.collidepoint(rightHandCoords[0], rightHandCoords[1])):
+                            isAboveHat = True
                             # tirage de l'image aléatoire
-                            if randomActif > 0:
+                            if randomActif :
                                 no = randint(1, 8)
-                                randomActif = 0
+                                randomActif = False
                                 # chemin d'accès de l'image
-                            srcImage = 'project/images/' + str(no) + '.png'
-                            stars = pygame.image.load('project/images/stars.gif')
-                            stars = pygame.transform.scale(stars, (100, 100))
-                            starsrect = stars.get_rect();
+                                srcImage = 'project/images/' + str(no) + '.png'
+                                img = pygame.image.load(srcImage)
+                                img = pygame.transform.scale(img, (150, 150))
+                                imgrect = img.get_rect()
+
+
+                        if(isAboveHat and wasInHat):
                             starsrect.center = (rightHandCoords[0], rightHandCoords[1])
-                            img = pygame.image.load(srcImage)
-                            img = pygame.transform.scale(img, (150, 150))
-                            imgrect = img.get_rect()
                             imgrect.center = (rightHandCoords[0], rightHandCoords[1])
                             screen.blit(stars, starsrect)
                             screen.blit(img, imgrect)
                             # hatrect.center(LEFT_ARM)
-                            screen.blit(hat, hatrect)
-                            pygame.display.update()
                             counter += 1
 
                         if (counter > timeMax):
-                            inHat = False
+                            counter = 0
+                            wasInHat = False
+                            randomActif = True
+                            isAboveHat = False
 
-                        if (inHat == False):
-                            # hatrect.center(LEFT_ARM)
-                            screen.blit(hat, hatrect)
-                            pygame.display.update()
+
+                    # hatrect.center(LEFT_ARM)
+                    screen.blit(hat, hatrect)
+                    pygame.display.update()
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:

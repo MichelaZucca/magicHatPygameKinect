@@ -170,7 +170,7 @@ def main():
                             
                         if(isHatOnHead and hatrect.collidepoint(headCoords)):
                             isHatOnHead = False
-                        else if(!isHatOnHead and hatrect.collidepoint(rightHandCoords)):
+                        elif((not isHatOnHead )and hatrect.collidepoint(rightHandCoords)):
                             print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
                         
 
