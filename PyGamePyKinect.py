@@ -3,6 +3,7 @@ import pygame
 from pygame.color import THECOLORS
 from pykinect import nui
 from pykinect.nui import JointId
+from random import randint
 
 VIDEO_WINSIZE = (600, 480)
 KINECTEVENT = pygame.USEREVENT
@@ -114,6 +115,11 @@ def main():
     hatrect = hat.get_rect()
     hatrect.center = (300, 360)
 
+    # Controle
+    inHat = True
+    inTrajectoire = False
+    randomImage = 1
+
     angle = 0
     with nui.Runtime() as kinect:
         kinect.skeleton_engine.enabled = True
@@ -152,8 +158,19 @@ def main():
 
                         hatrect.center = (leftHandCoords[0], leftHandCoords[1])
                         if(hatrect.collidepoint(rightHandCoords)):
-                            print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
+                            inHat = 1  # dans le chapeau
 
+                        if()
+                            
+
+                            if(inHat and inTrajectoire):
+                                print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
+                                # tirage de l'image aléatoire
+                                if randomActif > 0:
+                                    no = randint(1, 8)
+                                    randomActif = 0
+                                # chemin d'accès de l'image
+                                srcImage = 'images/' + str(no) + '.png'
 
                 # hatrect.center(LEFT_ARM)
                 screen.blit(hat, hatrect)
