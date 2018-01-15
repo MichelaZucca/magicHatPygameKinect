@@ -1,8 +1,10 @@
+# coding=utf-8
 import itertools
 import pygame
 from pygame.color import THECOLORS
 from pykinect import nui
 from pykinect.nui import JointId
+from random import randint
 
 VIDEO_WINSIZE = (600, 480)
 KINECTEVENT = pygame.USEREVENT
@@ -115,6 +117,12 @@ def main():
     hat = pygame.transform.scale(hat, (100, 100))
     hatrect = hat.get_rect()
     hatrect.center = (300, 360)
+    abovehatrect = pygame.Rect(hatrect.x, hatrect.y, 100, 100)
+
+    # Controle
+    inHat = True
+    inTrajectoire = False
+    randomImage = 1
 
     angle = 0
     with nui.Runtime() as kinect:
@@ -166,10 +174,34 @@ def main():
                             print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
                         
 
+                        # abovehatrect.center(hatrect.x, hatrect.y + 100)
+                        # if(hatrect.collidepoint(rightHandCoords)):
+                        #   inHat = 1  # dans le chapeau
 
-                # hatrect.center(LEFT_ARM)
-                screen.blit(hat, hatrect)
-                pygame.display.update()
+
+                        if(inHat and inTrajectoire):
+                            print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
+                            # tirage de l'image aléatoire
+                            if randomActif > 0:
+                                no = randint(1, 8)
+                                randomActif = 0
+                                # chemin d'accès de l'image
+                            srcImage = 'project/images/' + str(no) + '.png'
+                            stars = pygame.image.load('project/images/stars.gif')
+                            starsrect = stars.get_rect(center= (rightHand[0], rightHand[1]))
+                            img = pygame.image.load(srcImage)
+                            img = pygame.transform.scale(img, (150, 150))
+                            imgrect = img.get_rect(center= (rightHand[0], rightHand[1]))
+                            screen.blit(stars, starsrect)
+                            screen.blit(img, imgrect)
+                            # hatrect.center(LEFT_ARM)
+                            screen.blit(hat, hatrect)
+                            pygame.display.update()
+                        else:
+                            # hatrect.center(LEFT_ARM)
+                            screen.blit(hat, hatrect)
+                            pygame.display.update()
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     done = True
