@@ -109,6 +109,8 @@ def main():
     backgroundrect = background.get_rect()
 
     # Chapeau du magicien
+    hatOnHead = pygame.image.load('project/images/magicHat.png')
+    isHatOnHead = True
     hat = pygame.image.load('project/images/magicHat.png')
     hat = pygame.transform.scale(hat, (100, 100))
     hatrect = hat.get_rect()
@@ -146,13 +148,23 @@ def main():
                     if skeleton.eTrackingState == nui.SkeletonTrackingState.TRACKED:
                         leftHand = skeleton.SkeletonPositions[JointId.HandLeft];
                         rightHand = skeleton.SkeletonPositions[JointId.HandRight];
+                        head = skeleton.SkeletonPositions[JointId.Head];
+
 
                         leftHandCoords = skeleton_to_depth_image(leftHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
                         rightHandCoords = skeleton_to_depth_image(rightHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
-
-                        hatrect.center = (leftHandCoords[0], leftHandCoords[1])
-                        if(hatrect.collidepoint(rightHandCoords)):
+                        headCoords = skeleton_to_depth_image(head, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
+                        
+                        if(isHatOnHead):
+                            hatrect.center = (headCoords[0],headCoord[1])
+                        else:
+                            hatrect.center = (leftHandCoords[0], leftHandCoords[1])
+                            
+                        if(isHatOnHead and hatrect.collidepoint(headCoords)):
+                            isHatOnHead = False
+                        else if(!isHatOnHead and hatrect.collidepoint(rightHandCoords)):
                             print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
+                        
 
 
                 # hatrect.center(LEFT_ARM)
