@@ -119,6 +119,8 @@ def main():
     inHat = True
     inTrajectoire = False
     randomImage = 1
+    randomActif = False
+    no = 1
 
     angle = 0
     with nui.Runtime() as kinect:
@@ -159,9 +161,9 @@ def main():
                         hatrect.center = (leftHandCoords[0], leftHandCoords[1])
                         if(hatrect.collidepoint(rightHandCoords)):
                             inHat = 1  # dans le chapeau
+                            randomActif = True
 
-
-                        if(inHat and inTrajectoire):
+                        if(inHat ):
                             print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
                             # tirage de l'image aléatoire
                             if randomActif > 0:
@@ -170,10 +172,12 @@ def main():
                                 # chemin d'accès de l'image
                             srcImage = 'project/images/' + str(no) + '.png'
                             stars = pygame.image.load('project/images/stars.gif')
-                            starsrect = stars.get_rect(center= (rightHand[0], rightHand[1]))
+                            starsrect = stars.get_rect();
+                            starsrect.center = (rightHandCoords[0], rightHandCoords[1])
                             img = pygame.image.load(srcImage)
-                            img = pygame.transform.scale(img, (150, 150))
-                            imgrect = img.get_rect(center= (rightHand[0], rightHand[1]))
+                            img = pygame.transform.scale(img, (50, 50))
+                            imgrect = img.get_rect()
+                            imgrect.center = (rightHandCoords[0], rightHandCoords[1])
                             screen.blit(stars, starsrect)
                             screen.blit(img, imgrect)
                             # hatrect.center(LEFT_ARM)
