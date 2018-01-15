@@ -168,16 +168,22 @@ def main():
                         leftHand = skeleton.SkeletonPositions[JointId.HandLeft];
                         rightHand = skeleton.SkeletonPositions[JointId.HandRight];
 
+                        #Coordonnées des mains
                         leftHandCoords = skeleton_to_depth_image(leftHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
                         rightHandCoords = skeleton_to_depth_image(rightHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
 
+                        #Le chapeau suit la main gauche
                         hatrect.center = (leftHandCoords[0], leftHandCoords[1])
-                        abovehatrect.center = (hatrect.x, hatrect.y - 100)
-                        if (hatrect.collidepoint(rightHandCoords)):
-                            wasInHat = True  # dans le chapeau
+                        abovehatrect.center = (hatrect.x, hatrect.y - 100) #TODO enlever nombre magique
+
+                        #Si on a la main dans le chapeau
+                        if ((not wasInHat)and hatrect.collidepoint(rightHandCoords)):
+                            wasInHat = True
                             randomActif = True
-                        if(wasInHat and (leftHandCoords[0] - hatrect.center[0] > delta) and hatrect.center[0] - leftHandCoords[0] > delta):
+                        #Detecte si on change de trajectoires lorsque l'on sort la main du chapeau
+                        if(wasInHat and (rightHandCoords[0] - hatrect.center[0] > delta) and hatrect.center[0] - rightHandCoords[0] > delta):
                             wasInHat = False
+                        #Si on est assez haut du chapeau, on fait apparaitre une image
                         if (wasInHat and (not isAboveHat ) and abovehatrect.collidepoint(rightHandCoords[0], rightHandCoords[1])):
                             isAboveHat = True
                             # tirage de l'image aléatoire
@@ -189,8 +195,7 @@ def main():
                                 img = pygame.image.load(srcImage)
                                 img = pygame.transform.scale(img, (150, 150))
                                 imgrect = img.get_rect()
-
-
+                        # Si on a tiré un objet, on l'accroche a la main droite
                         if(isAboveHat and wasInHat):
                             starsrect.center = (rightHandCoords[0], rightHandCoords[1])
                             imgrect.center = (rightHandCoords[0], rightHandCoords[1])
@@ -198,13 +203,12 @@ def main():
                             screen.blit(img, imgrect)
                             # hatrect.center(LEFT_ARM)
                             counter += 1
-
+                        #Apres un certain temps, on reinitialise les variables pour pouvoir retirer un objet
                         if (counter > timeMax):
                             counter = 0
                             wasInHat = False
-                            randomActif = True
                             isAboveHat = False
-
+                            randomActif = True
 
                     # hatrect.center(LEFT_ARM)
                     screen.blit(hat, hatrect)

@@ -111,10 +111,10 @@ def main():
     backgroundrect = background.get_rect()
 
     # Chapeau du magicien
-    hatOnHead = pygame.image.load('project/images/magicHat.png')
     isHatOnHead = True
     hat = pygame.image.load('project/images/magicHat.png')
     hat = pygame.transform.scale(hat, (100, 100))
+    hat = pygame.transform.rotate(hat, 180)
     hatrect = hat.get_rect()
     hatrect.center = (300, 360)
     abovehatrect = pygame.Rect(hatrect.x, hatrect.y, 100, 100)
@@ -164,14 +164,14 @@ def main():
                         headCoords = skeleton_to_depth_image(head, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
                         
                         if(isHatOnHead):
-                            hatrect.center = (headCoords[0],headCoord[1])
+                            hatrect.center = (headCoords[0],headCoords[1] - 40)
                         else:
                             hatrect.center = (leftHandCoords[0], leftHandCoords[1])
                             
-                        if(isHatOnHead and hatrect.collidepoint(headCoords)):
-                            isHatOnHead = False
-                        elif((not isHatOnHead )and hatrect.collidepoint(rightHandCoords)):
-                            print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
+                        if(isHatOnHead and hatrect.collidepoint(leftHandCoords) or (not isHatOnHead )and hatrect.collidepoint(headCoords)):
+                            hat = pygame.transform.rotate(hat, 180)
+                            isHatOnHead = not isHatOnHead
+
                         
 
                         # abovehatrect.center(hatrect.x, hatrect.y + 100)
