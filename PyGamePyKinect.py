@@ -160,21 +160,30 @@ def main():
                         if(hatrect.collidepoint(rightHandCoords)):
                             inHat = 1  # dans le chapeau
 
-                        if()
-                            
 
-                            if(inHat and inTrajectoire):
-                                print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
-                                # tirage de l'image aléatoire
-                                if randomActif > 0:
-                                    no = randint(1, 8)
-                                    randomActif = 0
+                        if(inHat and inTrajectoire):
+                            print("SORS LA MAIN DE CE CHAPEAU MICHAEL")
+                            # tirage de l'image aléatoire
+                            if randomActif > 0:
+                                no = randint(1, 8)
+                                randomActif = 0
                                 # chemin d'accès de l'image
-                                srcImage = 'images/' + str(no) + '.png'
+                            srcImage = 'project/images/' + str(no) + '.png'
+                            stars = pygame.image.load('project/images/stars.gif')
+                            starsrect = stars.get_rect(center= (rightHand[0], rightHand[1]))
+                            img = pygame.image.load(srcImage)
+                            img = pygame.transform.scale(img, (150, 150))
+                            imgrect = img.get_rect(center= (rightHand[0], rightHand[1]))
+                            screen.blit(stars, starsrect)
+                            screen.blit(img, imgrect)
+                            # hatrect.center(LEFT_ARM)
+                            screen.blit(hat, hatrect)
+                            pygame.display.update()
+                        else:
+                            # hatrect.center(LEFT_ARM)
+                            screen.blit(hat, hatrect)
+                            pygame.display.update()
 
-                # hatrect.center(LEFT_ARM)
-                screen.blit(hat, hatrect)
-                pygame.display.update()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     done = True
