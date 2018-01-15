@@ -1,3 +1,4 @@
+# coding=utf-8
 import itertools
 import pygame
 from pygame.color import THECOLORS
@@ -114,6 +115,7 @@ def main():
     hat = pygame.transform.scale(hat, (100, 100))
     hatrect = hat.get_rect()
     hatrect.center = (300, 360)
+    abovehatrect = pygame.Rect(hatrect.x, hatrect.y, 100, 100)
 
     # Controle
     inHat = True
@@ -159,6 +161,7 @@ def main():
                         rightHandCoords = skeleton_to_depth_image(rightHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
 
                         hatrect.center = (leftHandCoords[0], leftHandCoords[1])
+                        abovehatrect.center(hatrect.x, hatrect.y + 100)
                         if(hatrect.collidepoint(rightHandCoords)):
                             inHat = 1  # dans le chapeau
                             randomActif = True
