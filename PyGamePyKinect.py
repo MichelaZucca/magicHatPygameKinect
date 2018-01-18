@@ -239,6 +239,12 @@ def main():
                                     counter += 1
                                 #Apres un certain temps, on reinitialise les variables pour pouvoir retirer un objet
                                 if (counter > timeMax):
+                                    srcImage = 'project/images/nuage.png'
+                                    img = pygame.image.load(srcImage)
+                                    img = pygame.transform.scale(img, (75, 75))
+                                    imgrect = img.get_rect();
+                                    screen.blit(stars, starsrect)
+                                    screen.blit(img, imgrect)
                                     counter = 0
                                     wasInHat = False
                                     isAboveHat = False
