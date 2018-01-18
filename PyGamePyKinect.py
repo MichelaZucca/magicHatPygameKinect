@@ -6,7 +6,9 @@ from pykinect import nui
 from pykinect.nui import JointId
 from random import randint
 
-VIDEO_WINSIZE = (600, 480)
+SIZE_WINDOW = (800, 600)
+
+VIDEO_WINSIZE = SIZE_WINDOW
 KINECTEVENT = pygame.USEREVENT
 
 screen = None
@@ -111,14 +113,16 @@ def main():
 
     pygame.display.set_caption("PyKinect Video Example")
     background = pygame.image.load('project/images/background.jpg');
-    background = pygame.transform.scale(background, (640, 480))
+    background = pygame.transform.scale(background, SIZE_WINDOW)
     backgroundrect = background.get_rect()
 
     # Chapeau du magicien
     hat = pygame.image.load('project/images/magicHat.png')
-    hat = pygame.transform.scale(hat, (100, 100))
+    hat = pygame.transform.scale(hat, (70, 70))
+    hat = pygame.transform.rotate(hat, 180)
     hatrect = hat.get_rect()
     hatrect.center = (300, 360)
+
     abovehatrect = pygame.Rect(hatrect.x, hatrect.y - 100, 100, 100)
 
     stars = pygame.image.load('project/images/stars.gif')
@@ -135,6 +139,9 @@ def main():
     delta = 0.5
     randomActif = False
     no = 1
+    isHatOnHead = True
+    timeToSwitchHead = 0
+    timeToSwitchHeadMax = 60
 
     angle = 0
     with nui.Runtime() as kinect:
@@ -151,9 +158,10 @@ def main():
         # Main game loop
         done = False
         screen.blit(background, backgroundrect)
-        screen.blit(hat, hatrect)
+       # screen.blit(hat, hatrect)
         pygame.display.update()
         while not done:
+            screen.blit(background, backgroundrect)
             event = pygame.event.wait()
 
             if event.type == pygame.QUIT:
@@ -161,58 +169,86 @@ def main():
                 break
             elif event.type == KINECTEVENT:
                 skeletons = event.skeletons
-                screen.blit(background, backgroundrect)
-                draw_skeletons(skeletons)
+
+                # Dessiner le squellette derrière le chapeau
+                if(not isHatOnHead):
+                    draw_skeletons(skeletons)
+
                 for skeleton in skeletons:
                     if skeleton.eTrackingState == nui.SkeletonTrackingState.TRACKED:
                         leftHand = skeleton.SkeletonPositions[JointId.HandLeft];
                         rightHand = skeleton.SkeletonPositions[JointId.HandRight];
+                        head = skeleton.SkeletonPositions[JointId.Head];
 
                         #Coordonnées des mains
                         leftHandCoords = skeleton_to_depth_image(leftHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
                         rightHandCoords = skeleton_to_depth_image(rightHand, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
+                        headCoords = skeleton_to_depth_image(head, VIDEO_WINSIZE[0], VIDEO_WINSIZE[1])
 
-                        #Le chapeau suit la main gauche
-                        hatrect.center = (leftHandCoords[0], leftHandCoords[1])
-                        abovehatrect.center = (hatrect.x, hatrect.y - 100) #TODO enlever nombre magique
+                        if (isHatOnHead):
+                            hatrect.center = (headCoords[0], headCoords[1] - 30)
+                        else:
+                            hatrect.center = (leftHandCoords[0], leftHandCoords[1])
 
-                        #Si on a la main dans le chapeau
-                        if ((not wasInHat)and hatrect.collidepoint(rightHandCoords)):
-                            wasInHat = True
-                            randomActif = True
-                        #Detecte si on change de trajectoires lorsque l'on sort la main du chapeau
-                        if(wasInHat and (rightHandCoords[0] - hatrect.center[0] > delta) and hatrect.center[0] - rightHandCoords[0] > delta):
-                            wasInHat = False
-                        #Si on est assez haut du chapeau, on fait apparaitre une image
-                        if (wasInHat and (not isAboveHat ) and abovehatrect.collidepoint(rightHandCoords[0], rightHandCoords[1])):
-                            isAboveHat = True
-                            # tirage de l'image aléatoire
-                            if randomActif :
-                                no = randint(1, 8)
-                                randomActif = False
-                                # chemin d'accès de l'image
-                                srcImage = 'project/images/' + str(no) + '.png'
-                                img = pygame.image.load(srcImage)
-                                img = pygame.transform.scale(img, (150, 150))
-                                imgrect = img.get_rect()
-                        # Si on a tiré un objet, on l'accroche a la main droite
-                        if(isAboveHat and wasInHat):
-                            starsrect.center = (rightHandCoords[0], rightHandCoords[1])
-                            imgrect.center = (rightHandCoords[0], rightHandCoords[1])
-                            screen.blit(stars, starsrect)
-                            screen.blit(img, imgrect)
-                            # hatrect.center(LEFT_ARM)
-                            counter += 1
-                        #Apres un certain temps, on reinitialise les variables pour pouvoir retirer un objet
-                        if (counter > timeMax):
-                            counter = 0
-                            wasInHat = False
-                            isAboveHat = False
-                            randomActif = True
+                        #Chapeau sur la tête ou pas
+                        if(isHatOnHead):
+                            screen.blit(hat, hatrect)
+                            if(hatrect.collidepoint(leftHandCoords) and timeToSwitchHead > timeToSwitchHeadMax):
+                                timeToSwitchHead = 0;
+                                hatrect.center = (leftHandCoords[0], leftHandCoords[1])
+                                hat = pygame.transform.rotate(hat, 180)
+                                isHatOnHead = False
+                        else:
+                            screen.blit(hat, hatrect)
+                            if(hatrect.collidepoint(headCoords) and timeToSwitchHead > timeToSwitchHeadMax):
+                                timeToSwitchHead = 0
+                                isHatOnHead = True
+                                hat = pygame.transform.rotate(hat, 180)
+                            else:
 
-                    # hatrect.center(LEFT_ARM)
-                    screen.blit(hat, hatrect)
-                    pygame.display.update()
+                                # Le chapeau suit la main gauche
+                                # hatrect.center = (leftHandCoords[0], leftHandCoords[1])
+                                abovehatrect.center = (hatrect.x, hatrect.y - 100) #TODO enlever nombre magique
+
+                                #Si on a la main dans le chapeau
+                                if ((not wasInHat)and hatrect.collidepoint(rightHandCoords)):
+                                    wasInHat = True
+                                    randomActif = True
+                                #Detecte si on change de trajectoires lorsque l'on sort la main du chapeau
+                                if(wasInHat and (rightHandCoords[0] - hatrect.center[0] > delta) and hatrect.center[0] - rightHandCoords[0] > delta):
+                                    wasInHat = False
+                                #Si on est assez haut du chapeau, on fait apparaitre une image
+                                if (wasInHat and (not isAboveHat ) and abovehatrect.collidepoint(rightHandCoords[0], rightHandCoords[1])):
+                                    isAboveHat = True
+                                    # tirage de l'image aléatoire
+                                    if randomActif :
+                                        no = randint(1, 8)
+                                        randomActif = False
+                                        # chemin d'accès de l'image
+                                        srcImage = 'project/images/' + str(no) + '.png'
+                                        img = pygame.image.load(srcImage)
+                                        img = pygame.transform.scale(img, (75, 75))
+                                        imgrect = img.get_rect()
+                                # Si on a tiré un objet, on l'accroche a la main droite
+                                if(isAboveHat and wasInHat):
+                                    starsrect.center = (rightHandCoords[0], rightHandCoords[1])
+                                    imgrect.center = (rightHandCoords[0], rightHandCoords[1])
+                                    screen.blit(stars, starsrect)
+                                    screen.blit(img, imgrect)
+                                    # hatrect.center(LEFT_ARM)
+                                    counter += 1
+                                #Apres un certain temps, on reinitialise les variables pour pouvoir retirer un objet
+                                if (counter > timeMax):
+                                    counter = 0
+                                    wasInHat = False
+                                    isAboveHat = False
+                                    randomActif = True
+
+                        #screen.blit(hat, hatrect)
+                if(isHatOnHead):
+                    draw_skeletons(skeletons)
+                timeToSwitchHead = timeToSwitchHead +1
+                pygame.display.update()
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -224,7 +260,6 @@ def main():
                     kinect.camera.elevation_angle = kinect.camera.elevation_angle - 1
                 elif event.key == pygame.K_x:
                     kinect.camera.elevation_angle = 0
-
     pygame.quit()
 
 
