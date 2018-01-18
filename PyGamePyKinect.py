@@ -130,6 +130,12 @@ def main():
     starsrect = stars.get_rect();
     srcImage = ' '
 
+    # image nuage
+    srcnuage = 'project/images/nuage.png'
+    imgnuage = pygame.image.load(srcnuage)
+    imgnuage = pygame.transform.scale(imgnuage, (140, 140))
+    imgnuagerect = imgnuage.get_rect()
+
     # Controle
     wasInHat = False
     isAboveHat = False
@@ -198,6 +204,10 @@ def main():
                                 hatrect.center = (leftHandCoords[0], leftHandCoords[1])
                                 hat = pygame.transform.rotate(hat, 180)
                                 isHatOnHead = False
+                                counter = 0
+                                wasInHat = False
+                                isAboveHat = False
+                                randomActif = True
                         else:
                             screen.blit(hat, hatrect)
                             if(hatrect.collidepoint(headCoords) and timeToSwitchHead > timeToSwitchHeadMax):
@@ -239,16 +249,13 @@ def main():
                                     counter += 1
                                 #Apres un certain temps, on reinitialise les variables pour pouvoir retirer un objet
                                 if (counter > timeMax):
-                                    srcImage = 'project/images/nuage.png'
-                                    img = pygame.image.load(srcImage)
-                                    img = pygame.transform.scale(img, (75, 75))
-                                    imgrect = img.get_rect();
-                                    screen.blit(stars, starsrect)
-                                    screen.blit(img, imgrect)
-                                    counter = 0
-                                    wasInHat = False
-                                    isAboveHat = False
-                                    randomActif = True
+                                    imgnuagerect.center = (rightHandCoords[0], rightHandCoords[1])
+                                    screen.blit(imgnuage, imgnuagerect)
+                                    if(counter > timeMax + 20 ):
+                                        counter = 0
+                                        wasInHat = False
+                                        isAboveHat = False
+                                        randomActif = True
 
                         #screen.blit(hat, hatrect)
                 if(isHatOnHead):
