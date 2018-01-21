@@ -112,12 +112,12 @@ def main():
     screen = pygame.display.set_mode(VIDEO_WINSIZE, 0, 32)
 
     pygame.display.set_caption("PyKinect Video Example")
-    background = pygame.image.load('project/images/background.jpg');
+    background = pygame.image.load('images/background.jpg');
     background = pygame.transform.scale(background, SIZE_WINDOW)
     backgroundrect = background.get_rect()
 
     # Chapeau du magicien
-    hat = pygame.image.load('project/images/magicHat.png')
+    hat = pygame.image.load('images/magicHat.png')
     hat = pygame.transform.scale(hat, (70, 70))
     hat = pygame.transform.rotate(hat, 180)
     hatrect = hat.get_rect()
@@ -125,13 +125,13 @@ def main():
 
     abovehatrect = pygame.Rect(hatrect.x, hatrect.y - 100, 100, 100)
 
-    stars = pygame.image.load('project/images/stars.gif')
+    stars = pygame.image.load('images/stars.gif')
     stars = pygame.transform.scale(stars, (100, 100))
     starsrect = stars.get_rect();
     srcImage = ' '
 
     # image nuage
-    srcnuage = 'project/images/nuage.png'
+    srcnuage = 'images/nuage.png'
     imgnuage = pygame.image.load(srcnuage)
     imgnuage = pygame.transform.scale(imgnuage, (140, 140))
     imgnuagerect = imgnuage.get_rect()
@@ -218,7 +218,7 @@ def main():
 
                                 # Le chapeau suit la main gauche
                                 # hatrect.center = (leftHandCoords[0], leftHandCoords[1])
-                                abovehatrect.center = (hatrect.x, hatrect.y - 100) #TODO enlever nombre magique
+                                abovehatrect.center = (hatrect.x, hatrect.y - 100)
 
                                 #Si on a la main dans le chapeau
                                 if ((not wasInHat)and hatrect.collidepoint(rightHandCoords)):
@@ -235,7 +235,7 @@ def main():
                                         no = randint(1, 8)
                                         randomActif = False
                                         # chemin d'accès de l'image
-                                        srcImage = 'project/images/' + str(no) + '.png'
+                                        srcImage = 'images/' + str(no) + '.png'
                                         img = pygame.image.load(srcImage)
                                         img = pygame.transform.scale(img, (75, 75))
                                         imgrect = img.get_rect()
